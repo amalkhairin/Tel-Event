@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "539494507193",
+    "firebase_url": "https://tel-event.firebaseio.com",
+    "project_id": "tel-event",
+    "storage_bucket": "tel-event.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:539494507193:android:15a7da00876c859c",
+        "android_client_info": {
+          "package_name": "com.tel.event"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "539494507193-2fl21lnm8f02v2fboqar1uff499jiee3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.tel.event",
+            "certificate_hash": "c460f649f3783e1ec750439a661136af49de45bb"
+          }
+        },
+        {
+          "client_id": "539494507193-2isbq8is20jv9hpntdefgg6f906uhjf1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBGGs0ddM0cRc0feKDPiDb1DggDM4iEjVE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "539494507193-2isbq8is20jv9hpntdefgg6f906uhjf1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
