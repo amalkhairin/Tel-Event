@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class Event extends StatelessWidget {
 
+  //search widget
   final search = TextFormField(
     decoration: InputDecoration(
       hintText: 'Search Event',
@@ -10,6 +11,7 @@ class Event extends StatelessWidget {
       border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0))
     ),
   );
+
   @override
   Widget build(BuildContext context) {
     return Container(

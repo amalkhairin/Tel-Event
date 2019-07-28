@@ -4,6 +4,7 @@
         "LTRB",
         "Stateful",
         "autofocus",
+        "autovalidate",
         "dont",
         "tidak",
         "vsync"

@@ -1,49 +1,66 @@
 import 'package:flutter/material.dart';
+import 'package:tel_event/dialogs.dart';
+import 'package:tel_event/login/register.dart';
 import '../app.dart';
 import '../login/validation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+import 'package:tel_event/app.dart';
 
 class LoginPage extends StatefulWidget {
-  static String tag = 'login-page';  //tag page
+  //tag page
+  static String tag = 'login-page';
 
   @override
   _LoginPageState createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> with Validation {
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-
-  Future<FirebaseUser> _handleSignIn() async {
-    final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
-    final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-
-    final AuthCredential credential = GoogleAuthProvider.getCredential(
-      accessToken: googleAuth.accessToken,
-      idToken: googleAuth.idToken,
-    );
-
-    final FirebaseUser user = await _auth.signInWithCredential(credential);
-    print("signed in " + user.displayName);
-    return user;
-  }
-
-  signOut(){
-    _googleSignIn.signOut();
-    _auth.signOut();
-  }
-
-  final formKey = GlobalKey<FormState>();   //create validation key
-
-  String email = '';
-  String password = '';
   
+  //init key
+  final formKey = GlobalKey<FormState>();
+
+  String _email = '';
+  String _password = '';
+  //init loading
+  bool _isLoading = false;
+
+  //form validate
+  bool validateAndSave(){
+    final form =formKey.currentState;
+    if (form.validate()){
+      form.save();
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  void validateAndSubmit() async {
+    if (validateAndSave()){
+      try {
+        FirebaseUser newUser = await FirebaseAuth.instance.signInWithEmailAndPassword(email: _email, password: _password);
+        if (newUser.isEmailVerified){
+
+          //move to main app page (home,profile,event)
+          Navigator.of(context).pushReplacement(MaterialPageRoute(
+            builder: (BuildContext context) => MainApp(user: newUser,)
+          ));
+        } else {
+          Dialogs().emailAlert(context, _email, newUser,);
+        }
+      } catch (e) {
+        print('$e');
+      }
+    }
+  }
+
+  //main code
   @override
   Widget build(BuildContext context) {
-
+    //get device size
     double height = MediaQuery.of(context).size.height;
 
+    //logo widget
     final logo = Center(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -54,9 +71,11 @@ class _LoginPageState extends State<LoginPage> with Validation {
       ),
     );
 
+    //email form
     final email = TextFormField(
       keyboardType: TextInputType.emailAddress,
       autofocus: false,
+      onSaved: (value) => _email = value,
       validator: validateEmail,
       decoration: InputDecoration(
         hintText: "Email",
@@ -66,9 +85,11 @@ class _LoginPageState extends State<LoginPage> with Validation {
       ),
     );
 
+    //password form
     final password = TextFormField(
       autofocus: false,
       obscureText: true,
+      onSaved: (value) => _password = value,
       validator: validatePass,
       decoration: InputDecoration(
         hintText: "Password",
@@ -78,6 +99,7 @@ class _LoginPageState extends State<LoginPage> with Validation {
       ),
     );
 
+    //login button widget
     final loginButton = Padding(
       padding: EdgeInsets.symmetric(vertical: 16.0),
       child: RaisedButton(
@@ -86,23 +108,13 @@ class _LoginPageState extends State<LoginPage> with Validation {
         color: Colors.red,
         child: Text("Log in", style: TextStyle(color: Colors.white,),),
         onPressed: (){
-          if (formKey.currentState.validate()){
-            formKey.currentState.save();
-            Navigator.of(context).pushNamed(MainApp.tag);
-          }
+          setState(() {
+           _isLoading = true; 
+          });
+          validateAndSubmit();
         },
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
       ),
-    );
-
-    final googleSignIn = InkWell(
-      onTap: _handleSignIn,
-      child: Image.asset('img/google-sign.png',width: 150.0,),
-    );
-
-    final googleSignOut = InkWell(
-      onTap: signOut(),
-      child: Image.asset('img/google-sign.png',width: 150.0,),
     );
 
     final forgetPass = FlatButton(
@@ -111,47 +123,71 @@ class _LoginPageState extends State<LoginPage> with Validation {
     );
 
     final register = FlatButton(
-      child: Text("dont have an account? sign up here", style: TextStyle(color: Colors.black54),),
-      onPressed: null,
+      child: Text("don\'t have an account? sign up here", style: TextStyle(color: Colors.black54),),
+      onPressed: (){
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            //move to register page
+            builder: (BuildContext context) => Register()
+          )
+        );
+      },
     );
+
+    Widget loadingIndicator = _isLoading? new Container(
+      width: 100.0,
+      height: 100.0,
+      decoration: BoxDecoration(
+        color: Colors.grey[300],
+        borderRadius: BorderRadius.circular(20)
+      ),
+      child: new Padding(
+        padding: const EdgeInsets.all(5.0),
+        child: new Center(
+          child: new CircularProgressIndicator(
+            //backgroundColor: Colors.white,
+          )
+        )
+      ),
+    ) : new Container();
 
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Center(
-        child: Form(
-          key: formKey,
-          child: ListView(
-            shrinkWrap: true,
-            children: <Widget>[
-              Padding(
-                padding: EdgeInsets.fromLTRB(24.0, 0.0, 24.0, 50.0),
-                child: logo,
-              ),
-              Padding(
-                padding: EdgeInsets.only(left: 30.0,right: 30.0),
-                child: Column(
-                  children: <Widget>[
-                    SizedBox(height: height/100,),
-                    Text("LOGIN", textAlign: TextAlign.center,style: TextStyle(color: Colors.red, fontSize: 20.0),),
-                    SizedBox(height: height/50.0,),
-                    email,
-                    SizedBox(height: height/50.0,),
-                    password,
-                    forgetPass,
-                    loginButton,
-                    Text('or'),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 20.0),
-                      child: googleSignIn,
+      body: Stack(
+        children: <Widget>[
+          Center(
+            child: Form(
+              key: formKey,
+              autovalidate: true,
+              child: ListView(
+                shrinkWrap: true,
+                children: <Widget>[
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(24.0, 0.0, 24.0, 50.0),
+                    child: logo,
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(left: 30.0,right: 30.0),
+                    child: Column(
+                      children: <Widget>[
+                        SizedBox(height: height/100,),
+                        Text("LOGIN", textAlign: TextAlign.center,style: TextStyle(color: Colors.red, fontSize: 20.0),),
+                        SizedBox(height: height/50.0,),
+                        email,
+                        SizedBox(height: height/50.0,),
+                        password,
+                        forgetPass,
+                        loginButton,
+                        register,
+                      ],
                     ),
-                    googleSignOut,
-                    //register,
-                  ],
-                ),
-              )
-            ],
+                  )
+                ],
+              ),
+            ),
           ),
-        ),
+          new Align(child: loadingIndicator,alignment: FractionalOffset.center,)
+        ]
       ),
     );
   }
