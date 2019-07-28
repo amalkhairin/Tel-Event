@@ -18,17 +18,17 @@ class Profile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final googleSignOut = InkWell(
-      onTap: (){
+    final googleSignOut = FlatButton(
+      color: Colors.red,
+      onPressed: (){
         signOut();
-        Navigator.of(context).push(
+        Navigator.of(context).pushReplacement(
           MaterialPageRoute(
             builder: (BuildContext context) => LoginPage()
           )
         );
       },
-      child: Image.asset('img/google-sign.png',width: 150.0,),
-      
+      child: Text('LOG OUT', style: TextStyle(color: Colors.white),),
     );
 
     return Scaffold(
@@ -36,6 +36,7 @@ class Profile extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            Text('Hello'),
             Text(this.user.email),
             googleSignOut,
           ],

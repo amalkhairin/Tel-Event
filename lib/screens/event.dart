@@ -31,9 +31,8 @@ class Event extends StatelessWidget {
                   Card(
                     child: Row(
                       children: <Widget>[
-                        Text('data'),
-                        Text('data2'),
-                        Icon(Icons.ac_unit)                      
+                        Icon(Icons.data_usage),
+                        Text('Dynamic data List', style: TextStyle(fontSize: 40.0),),               
                       ],
                     ),
                   )

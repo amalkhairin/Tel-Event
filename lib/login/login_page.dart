@@ -24,6 +24,7 @@ class _LoginPageState extends State<LoginPage> with Validation {
   //init loading
   bool _isLoading = false;
 
+
   //form validate
   bool validateAndSave(){
     final form =formKey.currentState;
@@ -40,7 +41,6 @@ class _LoginPageState extends State<LoginPage> with Validation {
       try {
         FirebaseUser newUser = await FirebaseAuth.instance.signInWithEmailAndPassword(email: _email, password: _password);
         if (newUser.isEmailVerified){
-
           //move to main app page (home,profile,event)
           Navigator.of(context).pushReplacement(MaterialPageRoute(
             builder: (BuildContext context) => MainApp(user: newUser,)
@@ -109,7 +109,10 @@ class _LoginPageState extends State<LoginPage> with Validation {
         child: Text("Log in", style: TextStyle(color: Colors.white,),),
         onPressed: (){
           setState(() {
-           _isLoading = true; 
+            _isLoading = true;
+            if (_isLoading){
+              
+            };
           });
           validateAndSubmit();
         },
@@ -134,7 +137,7 @@ class _LoginPageState extends State<LoginPage> with Validation {
       },
     );
 
-    Widget loadingIndicator = _isLoading? new Container(
+    Widget loadingIndicator = _isLoading ? new Container(
       width: 100.0,
       height: 100.0,
       decoration: BoxDecoration(
