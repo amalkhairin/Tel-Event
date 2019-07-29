@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:tel_event/login/login_page.dart';
+import 'package:tel_event/login/register.dart';
 
 class Dialogs {
   verificationAlert(BuildContext context, String email, bool back){
@@ -56,6 +57,71 @@ class Dialogs {
               },
               child: Text('Ok'),
             ),
+          ],
+        );
+      }
+    );
+  }
+
+  //email already taken
+  errorEmailA(BuildContext context, String email){
+    return showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context){
+        return AlertDialog(
+          title: Text('Error'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text(email+" has already taken. try another email or login to continue"),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            FlatButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text('Ok'),
+            ),
+          ],
+        );
+      }
+    );
+  }
+
+  //user not found
+  errorEmailB(BuildContext context){
+    return showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context){
+        return AlertDialog(
+          title: Text('Error'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Error user not found. please register first'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            FlatButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text('cancel'),
+            ),
+            FlatButton(
+              onPressed: (){
+                Navigator.pop(context);
+                Navigator.of(context).pushReplacement(MaterialPageRoute(
+                  builder: (BuildContext context) => Register()
+                ));
+              },
+              child: Text('register'),
+            )
           ],
         );
       }

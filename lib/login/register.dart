@@ -29,6 +29,7 @@ class _RegisterState extends State<Register> {
   bool valid = false;
   bool resend = false;
   bool back = false;
+  bool _isLoading = false;
   
   //account verified checked
   bool verified(FirebaseUser user){
@@ -47,23 +48,11 @@ class _RegisterState extends State<Register> {
         await newUser.sendEmailVerification();
         Dialogs().verificationAlert(context,_email,back);
       } catch (e) {
-        print('$e');
+        setState(() {
+         _isLoading = false; 
+        });
+        Dialogs().errorEmailA(context, _email);
       }
-    }
-  }
-
-  //validate email
-  String _validateEmail(String value){
-    if (value.isNotEmpty){
-      //RegEx pattern email verification
-      Pattern pattern = r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
-      RegExp regExp = new RegExp(pattern);
-      if (regExp.hasMatch(value)){
-        return null;
-      }
-      return 'email isn\'t valid';
-    } else {
-      return 'email can\'t be empty';
     }
   }
 
@@ -136,10 +125,12 @@ class _RegisterState extends State<Register> {
         child: Text("Register", style: TextStyle(color: Colors.white,),),
         onPressed: () async {
           formKey.currentState.save();
+          setState(() {
+           if (validateAndSave()){
+             _isLoading = true;
+           } 
+          });
           validateAndSubmit();
-          //Dialogs().verificationAlert(context,_email,back);
-          print('$_email');
-          print(valid);
         },
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
       ),
@@ -160,39 +151,61 @@ class _RegisterState extends State<Register> {
     //debug test
     print('$_email'+'aaa');
     print('$_password'+'bbbb');
+    
+    Widget loadingIndicator = _isLoading ? new Container(
+      width: 100.0,
+      height: 100.0,
+      decoration: BoxDecoration(
+        color: Colors.grey[300],
+        borderRadius: BorderRadius.circular(20)
+      ),
+      child: new Padding(
+        padding: const EdgeInsets.all(5.0),
+        child: new Center(
+          child: new CircularProgressIndicator(
+            //backgroundColor: Colors.white,
+          )
+        )
+      ),
+    ) : new Container();
 
     //main code
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Center(
-        child: Form(
-          key: formKey,
-          autovalidate: true,
-          child: ListView(
-            shrinkWrap: true,
-            children: <Widget>[
-              Padding(
-                padding: EdgeInsets.fromLTRB(24.0, 0.0, 24.0, 50.0),
-                child: label,
+      body: Stack(
+        children: <Widget>[
+          Center(
+            child: Form(
+              key: formKey,
+              autovalidate: true,
+              child: ListView(
+                shrinkWrap: true,
+                children: <Widget>[
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(24.0, 0.0, 24.0, 50.0),
+                    child: label,
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(left: 30.0,right: 30.0),
+                    child: Column(
+                      children: <Widget>[
+                        SizedBox(height: height/50.0,),
+                        email,
+                        SizedBox(height: height/50.0,),
+                        password,
+                        SizedBox(height: height/50.0,),
+                        reEnterPassword,
+                        registerButton,
+                        signIn,
+                      ],
+                    ),
+                  )
+                ],
               ),
-              Padding(
-                padding: EdgeInsets.only(left: 30.0,right: 30.0),
-                child: Column(
-                  children: <Widget>[
-                    SizedBox(height: height/50.0,),
-                    email,
-                    SizedBox(height: height/50.0,),
-                    password,
-                    SizedBox(height: height/50.0,),
-                    reEnterPassword,
-                    registerButton,
-                    signIn,
-                  ],
-                ),
-              )
-            ],
+            ),
           ),
-        ),
+          new Align(child: loadingIndicator,alignment: FractionalOffset.center,)
+        ],
       ),
     );
   }

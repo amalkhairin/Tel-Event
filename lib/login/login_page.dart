@@ -49,7 +49,10 @@ class _LoginPageState extends State<LoginPage> with Validation {
           Dialogs().emailAlert(context, _email, newUser,);
         }
       } catch (e) {
-        print('$e');
+        setState(() {
+         _isLoading = false; 
+        });
+        Dialogs().errorEmailB(context);
       }
     }
   }
@@ -109,10 +112,9 @@ class _LoginPageState extends State<LoginPage> with Validation {
         child: Text("Log in", style: TextStyle(color: Colors.white,),),
         onPressed: (){
           setState(() {
-            _isLoading = true;
-            if (_isLoading){
-              
-            };
+            if (validateAndSave()){
+              _isLoading = true;
+            }
           });
           validateAndSubmit();
         },
