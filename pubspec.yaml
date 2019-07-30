@@ -26,6 +26,7 @@ dependencies:
   google_sign_in: ^4.0.4
   firebase_auth: ^0.11.1+12
   cloud_firestore: ^0.12.7+1
+  carousel_pro: ^1.0.0
 
 dev_dependencies:
   flutter_test:
@@ -46,6 +47,10 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
   - img/google-sign.png
+  - assets/img/1.jpg
+  - assets/img/2.png
+  - assets/img/3.jpg
+  - assets/img/4.png
   #  - images/a_dot_burr.jpeg
   #  - images/a_dot_ham.jpeg
 
