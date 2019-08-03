@@ -27,7 +27,7 @@ class _HomePageState extends State<HomePage> {
       child: Image.asset('assets/img/1.jpg',width: screenWidth/4,height: screenHeight/7,),
     );
 
-    Widget image_carousel = new Container(
+    Widget imageCarousel = new Container(
       height: screenHeight/3,
       padding: EdgeInsets.all(20.0),
       child: Stack(
@@ -35,6 +35,7 @@ class _HomePageState extends State<HomePage> {
           Carousel(
             boxFit: BoxFit.cover,
             images: [
+              //change image assets in assets/img folder and rewrite path in pubspec.yaml
               AssetImage('assets/img/1.jpg'),
               AssetImage('assets/img/2.png'),
               AssetImage('assets/img/3.jpg'),
@@ -47,10 +48,15 @@ class _HomePageState extends State<HomePage> {
             dotColor: Colors.white70,
           ),
           Center(
-            child: Text('PERMIUM EVENT', style: TextStyle(color: Colors.white, fontSize: 30.0,backgroundColor: Colors.black26),)
+            child: Text('PREMIUM EVENT', style: TextStyle(color: Colors.white, fontSize: 30.0,backgroundColor: Colors.black26),)
           )
         ]
       ),
+    );
+
+    final registerEvent = FlatButton(
+      onPressed: (){},
+      child: Text('Click for more information'),
     );
 
     return Container(
@@ -66,18 +72,24 @@ class _HomePageState extends State<HomePage> {
             ],
           ),
           SizedBox(height: screenHeight/50,),
-          image_carousel,
+          imageCarousel,
           SizedBox(height: screenHeight/50,),
           Text('NEW EVENTS'),
           SizedBox(height: screenHeight/50,),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            newEvent,
-            newEvent,
-            newEvent,
-          ],
-        ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              newEvent,
+              newEvent,
+              newEvent,
+            ],
+          ),
+          SizedBox(height: screenHeight/50,),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 0.0),
+            child: Text('Ingin mendaftarkan event anda?'),
+          ),
+          registerEvent
         ],
       ),
     );

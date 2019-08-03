@@ -27,6 +27,7 @@ dependencies:
   firebase_auth: ^0.11.1+12
   cloud_firestore: ^0.12.7+1
   carousel_pro: ^1.0.0
+  folding_cell: ^0.1.2
 
 dev_dependencies:
   flutter_test:
