@@ -1,0 +1,1 @@
+start C:\src\flutter\flutter_console.bat

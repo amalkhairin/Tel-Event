@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:tel_event/login/login_page.dart';
 import '../dialogs.dart';
@@ -23,13 +24,17 @@ class _RegisterState extends State<Register> {
       return false;
     }
   }
-  
+  String id = '';
   String _email = '';
   String _password = '';
+  String _username = '';
   bool valid = false;
   bool resend = false;
   bool back = false;
   bool _isLoading = false;
+  bool _isSecure = true;
+  bool _secure2 = true;
+  int idx = 1;
   
   //account verified checked
   bool verified(FirebaseUser user){
@@ -44,6 +49,8 @@ class _RegisterState extends State<Register> {
     if (validateAndSave()){
       try {
         FirebaseUser newUser = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: _email, password: _password);
+        DocumentReference ref = await Firestore.instance.collection('user').add({'username': _username, 'uid': newUser.uid, 'email':_email});
+        
         //send verification link to email
         await newUser.sendEmailVerification();
         Dialogs().verificationAlert(context,_email,back);
@@ -56,10 +63,16 @@ class _RegisterState extends State<Register> {
     }
   }
 
+  void _togglePassVisibility(){
+    setState(() {
+     _isSecure = !_isSecure; 
+    });
+  }
+
   //main code
   @override
   Widget build(BuildContext context) {
-
+    
     //get device size
     double height = MediaQuery.of(context).size.height;
 
@@ -69,6 +82,17 @@ class _RegisterState extends State<Register> {
         children: <Widget>[
           Text('Register New Account', style: TextStyle(color: Colors.red, fontSize: 20.0),),
         ],
+      ),
+    );
+
+    final username = TextFormField(
+      textCapitalization: TextCapitalization.none,
+      validator: Validation().validateUsername,
+      onSaved: (value) => _username = value,
+      decoration: InputDecoration(
+        hintText: 'Username',
+        prefixIcon: Icon(Icons.person, color: Colors.red,),
+        contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
       ),
     );
 
@@ -85,7 +109,7 @@ class _RegisterState extends State<Register> {
 
     final password = TextFormField(
       
-      obscureText: true,
+      obscureText: _isSecure,
       validator: (value) {
         if (value.isEmpty){
           return 'password can\'t be empty';
@@ -103,16 +127,34 @@ class _RegisterState extends State<Register> {
         hintText: 'Password',
         prefixIcon: Icon(Icons.lock, color: Colors.red,),
         contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
+        suffixIcon: GestureDetector(
+          onTap: (){
+            _togglePassVisibility();
+          },
+          child: Icon(
+            _isSecure ? Icons.visibility_off : Icons.visibility,
+            color: _isSecure ? Colors.grey: Colors.red,
+          ),
+        ),
       ),
     );
 
     final reEnterPassword = TextFormField(
-      obscureText: true,
+      obscureText: _secure2,
       validator: (value) => value != _password ? "password doesn\'t match" : null,
       decoration: InputDecoration(
         hintText: 'Re-enter password',
         prefixIcon: Icon(Icons.lock, color: Colors.red,),
         contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
+        suffixIcon: GestureDetector(
+          onTap: (){
+            _togglePassVisibility();
+          },
+          child: Icon(
+            _isSecure ? Icons.visibility_off : Icons.visibility,
+            color: _isSecure ? Colors.grey: Colors.red,
+          ),
+        ),
       ),
     );
      
@@ -149,8 +191,9 @@ class _RegisterState extends State<Register> {
     );
 
     //debug test
-    print('$_email'+'aaa');
-    print('$_password'+'bbbb');
+    print('$_username'+' 0000');
+    print('$_email'+' aaa');
+    print('$_password'+' bbbb');
     
     Widget loadingIndicator = _isLoading ? new Container(
       width: 100.0,
@@ -189,6 +232,8 @@ class _RegisterState extends State<Register> {
                     padding: EdgeInsets.only(left: 30.0,right: 30.0),
                     child: Column(
                       children: <Widget>[
+                        SizedBox(height: height/50.0,),
+                        username,
                         SizedBox(height: height/50.0,),
                         email,
                         SizedBox(height: height/50.0,),

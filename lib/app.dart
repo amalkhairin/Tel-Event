@@ -2,13 +2,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:tel_event/screens/event.dart';
 import 'package:tel_event/screens/home.dart';
+import 'package:tel_event/screens/myTicket.dart';
 import 'package:tel_event/screens/profile.dart';
 
 class MainApp extends StatefulWidget {
-  MainApp({this.user, this.googleSignIn});
+  MainApp({this.user});
   //init firebase
   final FirebaseUser user;
-  final FirebaseAuth googleSignIn;
 
   //tag page
   static String tag = "main-app";
@@ -22,16 +22,24 @@ class _MainAppState extends State<MainApp> with SingleTickerProviderStateMixin {
   //navigation tab controller
   TabController controller;
 
+  double fontSize = 20.0;
+
   //init tab
   @override
   void initState(){
     super.initState();
-    controller = TabController(vsync: this,length: 3);
+    controller = TabController(vsync: this,length: 4);
   }
 
   //main code
   @override
   Widget build(BuildContext context) {
+
+    final width = MediaQuery.of(context).size.width;
+    final height = MediaQuery.of(context).size.height;
+
+    double sizeFont = (height < 683 || width < 411)||(height < 571 || width < 340)? 10.0 : 16.0;
+
     return MaterialApp(
       //disable debug banner
       debugShowCheckedModeBanner: false,
@@ -41,13 +49,15 @@ class _MainAppState extends State<MainApp> with SingleTickerProviderStateMixin {
           controller: controller,
           children: <Widget>[
             Home(),
-            Event(),
+            Event(user: widget.user,),
+            MyTicket(user: widget.user,),
             Profile(user: widget.user,),
           ],
         ),
         bottomNavigationBar: TabBar(
           controller: controller,
           labelColor: Colors.white,
+          labelStyle: TextStyle(fontSize: sizeFont),
           unselectedLabelColor: Colors.white70,
           indicatorSize: TabBarIndicatorSize.label,
           indicatorColor: Colors.white,
@@ -59,6 +69,10 @@ class _MainAppState extends State<MainApp> with SingleTickerProviderStateMixin {
             Tab(
               icon: Icon(Icons.event_available),
               text: 'Event',
+            ),
+            Tab(
+              icon: Icon(Icons.description),
+              text: 'My Ticket',
             ),
             Tab(
               icon: Icon(Icons.person),

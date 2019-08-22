@@ -5,7 +5,13 @@ import 'package:tel_event/login/login_page.dart';
 
 void main() => runApp(MyApp());
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+
   final routes = <String, WidgetBuilder>{     //navigation routes of page
     LoginPage.tag: (context) => LoginPage(),
     MainApp.tag: (context) => MainApp(),
@@ -18,6 +24,7 @@ class MyApp extends StatelessWidget {
       DeviceOrientation.portraitUp,
     ]);
     SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: "Tel-Event",

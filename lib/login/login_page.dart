@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tel_event/dialogs.dart';
+import 'package:tel_event/login/pass_reset.dart';
 import 'package:tel_event/login/register.dart';
 import '../app.dart';
 import '../login/validation.dart';
@@ -7,6 +8,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:tel_event/app.dart';
 
 class LoginPage extends StatefulWidget {
+  LoginPage({Key key, this.log}) : super(key : key);
+  final bool log;
   //tag page
   static String tag = 'login-page';
 
@@ -23,6 +26,8 @@ class _LoginPageState extends State<LoginPage> with Validation {
   String _password = '';
   //init loading
   bool _isLoading = false;
+  bool _isSecure = true;
+  int idx = 1;
 
 
   //form validate
@@ -46,20 +51,32 @@ class _LoginPageState extends State<LoginPage> with Validation {
             builder: (BuildContext context) => MainApp(user: newUser,)
           ));
         } else {
+          setState(() {
+           _isLoading = false; 
+          });
           Dialogs().emailAlert(context, _email, newUser,);
         }
       } catch (e) {
         setState(() {
          _isLoading = false; 
         });
-        Dialogs().errorEmailB(context);
+        print('$e');
+        final String error = e.toString();
+        Dialogs().errorEmailB(context,error);
       }
     }
+  }
+
+  void _togglePassVisibility(){
+    setState(() {
+     _isSecure = !_isSecure; 
+    });
   }
 
   //main code
   @override
   Widget build(BuildContext context) {
+    
     //get device size
     double height = MediaQuery.of(context).size.height;
 
@@ -76,6 +93,7 @@ class _LoginPageState extends State<LoginPage> with Validation {
 
     //email form
     final email = TextFormField(
+      autocorrect: true,
       keyboardType: TextInputType.emailAddress,
       autofocus: false,
       onSaved: (value) => _email = value,
@@ -91,11 +109,20 @@ class _LoginPageState extends State<LoginPage> with Validation {
     //password form
     final password = TextFormField(
       autofocus: false,
-      obscureText: true,
+      obscureText: _isSecure,
       onSaved: (value) => _password = value,
       validator: validatePass,
       decoration: InputDecoration(
         hintText: "Password",
+        suffixIcon: GestureDetector(
+          onTap: (){
+            _togglePassVisibility();
+          },
+          child: Icon(
+            _isSecure ? Icons.visibility_off : Icons.visibility,
+            color: _isSecure ? Colors.grey: Colors.red,
+          ),
+        ),
         prefixIcon: Icon(Icons.lock, color: Colors.red,),
         contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
         //border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))
@@ -109,13 +136,13 @@ class _LoginPageState extends State<LoginPage> with Validation {
         elevation: 5.0,
         splashColor: Colors.grey,
         color: Colors.red,
-        child: Text("Log in", style: TextStyle(color: Colors.white,),),
+        child: Text("Log in", style: TextStyle(color: Colors.white),),
         onPressed: (){
-          setState(() {
-            if (validateAndSave()){
-              _isLoading = true;
-            }
-          });
+          if (validateAndSave()) {
+            setState(() {
+             _isLoading = true; 
+            });
+          }
           validateAndSubmit();
         },
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
@@ -123,8 +150,10 @@ class _LoginPageState extends State<LoginPage> with Validation {
     );
 
     final forgetPass = FlatButton(
-      child: Text("Forgotten password ?", style: TextStyle(color: Colors.black54)),
-      onPressed: null,
+      child: Text("Forgotten password ?", style: TextStyle(color: Colors.black38)),
+      onPressed: (){
+        Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => PassReset()));
+      },
     );
 
     final register = FlatButton(

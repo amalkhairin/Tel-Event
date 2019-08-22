@@ -23,4 +23,24 @@ class Validation {
       return 'email can\'t be empty';
     }
   }
+
+  String validateUsername(String value){
+    if (value.isEmpty){
+      return 'username can\'t be empty';
+    }
+    return null;
+  }
+
+  String validatePhone(int number){
+    if(number != null){
+      Pattern pattern = r'(\+62 ((\d{3}([ -]\d{3,})([- ]\d{4,})?)|(\d+)))|(\(\d+\) \d+)|\d{3}( \d+)+|(\d+[ -]\d+)|\d+$';
+      RegExp regExp = new RegExp(pattern);
+      if (regExp.hasMatch(number.toString())){
+        return null;
+      }
+      return 'phone number isn\'t valid';
+    } else {
+      return 'phone number can\'t be empty';
+    }
+  }
 }
